@@ -3,7 +3,6 @@ find_package(Threads REQUIRED)
 
 add_library(LMP_CommunicationLibrary
     src/LMP_Device.cpp
-    src/GKV_Device.h
     src/LMP_AlgParamPacket.h
     src/LMP_AlorithmPackets.h
     src/LMP_BasePacket.h
