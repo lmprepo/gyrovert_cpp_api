@@ -99,11 +99,6 @@ void GKV_FileWriter::dataNewThreadReceiveFcn()
     }
 }
 
-void GKV_FileWriter::FilteringBullshitIdontUnderstand()
-{
-
-}
-
 void GKV_FileWriter::WriteCOM(Gyrovert::GKV_PacketBase* buf)
 {
 #ifdef _WIN32

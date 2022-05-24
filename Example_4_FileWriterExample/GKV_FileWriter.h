@@ -28,7 +28,6 @@ private:
     void dataNewThreadReceiveFcn();
     void dataNewThreadWriteFcn();
     void RunDevice();
-    void FilteringBullshitIdontUnderstand();
     void WriteCOM(Gyrovert::GKV_PacketBase* buf);
     void ReadGkvData();
     bool InitSerialPort(std::string port_name, int32_t baudrate);
