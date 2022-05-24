@@ -102,7 +102,7 @@ namespace Gyrovert
     public:
         LMP_Device();
         ~LMP_Device();
-        //void RunDevice();
+
         uint8_t Receive_Process(char* data_ptr, uint16_t buffer_size);
 
 
@@ -128,9 +128,6 @@ namespace Gyrovert
         void SetAUXPortMode(uint8_t cmd, uint8_t port, uint16_t protocol, uint16_t baudrate, uint16_t mode);
         void SetCANPortMode(uint8_t port, uint16_t protocol, uint16_t baudrate);
         void SetCANPortMsg(uint8_t port, uint8_t index, uint16_t prescaler, uint32_t id);
-
-        virtual void WriteDataToGKV(GKV_PacketBase* data) {};
-        virtual char* ReadDataFromGKV() { return 0; };
 
         void CheckConnection();
         void RequestDeviceID();
@@ -159,7 +156,7 @@ namespace Gyrovert
         void SetGNSSDataReceivedCallback(std::function<void(LMP_Device*, GKV_GpsData *)>ptrReceivedPacketProcessingFun);
         void SetExtGNSSDataReceivedCallback(std::function<void(LMP_Device*, GKV_GpsDataExt *)>ptrReceivedPacketProcessingFun);
         void SetConfirmPacketReceivedCallback(std::function<void(LMP_Device*)> ptrReceivedPacketProcessingFun);
-        //void SetReceiveDataFunction(std::function<char *()>ptrRecPacketFun);
+
         void clear() { CTR = 0; }
 
         void SetReceiveBufferSize(uint16_t size) { if (size > 0) ReceivedDataSize = size; else ReceivedDataSize = 1; }
@@ -190,9 +187,6 @@ namespace Gyrovert
         void RecognisePacket(GKV_PacketBase* buf);
 
         std::function<void(LMP_Device *, GKV_PacketBase *)> GKV_PacketProcessingCallback = nullptr;
-
-
-
 
         uint8_t InputPacket[sizeof(GKV_PacketBase)] = { 0 };
         GKV_PacketBase* Output_Packet = new GKV_PacketBase;
