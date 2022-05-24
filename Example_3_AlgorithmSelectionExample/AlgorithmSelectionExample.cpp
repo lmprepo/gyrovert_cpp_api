@@ -1,7 +1,7 @@
 ﻿#ifdef _WIN32
 #include <windows.h>
 #define SerialPortHandle HANDLE
-#define GKV_BAUDRATE_921600 921600
+#define GKV_BDRT921600 921600
 #endif
 #ifdef __linux
 #include <stdlib.h>
@@ -9,7 +9,7 @@
 #include <fcntl.h>
 #include <termios.h>
 #define SerialPortHandle int
-#define GKV_BAUDRATE_921600 B921600
+#define GKV_BDRT921600 B921600
 #endif
 
 #include <iostream>
@@ -43,7 +43,7 @@ int main()
     #ifdef _WIN32
     com_port = "\\\\.\\" + com_port;
     #endif
-    if (!(InitSerialPort(com_port, GKV_BAUDRATE_921600))) return 1;
+    if (!(InitSerialPort(com_port, GKV_BDRT921600))) return 1;
     // GKV Settings
     GKV->SetSendDataFunction(WriteCOM);/*Set User Function That Sends Data to Serial Port connected to GKV*/
     GKV->SetReceivedPacketCallback(ShowPacketData);/*Set User Callback for Parsed Sensors Data Packet*/
@@ -286,12 +286,13 @@ void WriteCOM(GKV_PacketBase* buf)
 void ReadGkvData(LMP_Device* dev)
 {
     static char ReceivedData[2048] = { 0 };
-    ssize_t iSize;
-    ssize_t iRet = 0;
+    uint32_t iRet = 0;
     #ifdef _WIN32
-    iRet = ReadFile(hSerial, &ReceivedData, sizeof(ReceivedData), &iSize, 0);
+    DWORD iSize;
+    iRet = ReadFile(hSerial, &ReceivedData, sizeof(ReceivedData), (LPDWORD)&iSize, 0);
     #endif
     #ifdef __linux
+    uint16_t iSize;
     iRet = read(hSerial, &ReceivedData, sizeof(ReceivedData));
     iSize=iRet;
     #endif
