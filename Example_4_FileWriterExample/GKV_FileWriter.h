@@ -1,4 +1,7 @@
+#ifndef GKV_FILE_WRITER_H
+#define GKV_FILE_WRITER_H
 #include "LMP_Device.h"
+
 #include <fstream>
 
 #ifdef _WIN32
@@ -51,3 +54,4 @@ private:
     std::string filePath;
     std::ofstream outfile;
 };
+#endif
