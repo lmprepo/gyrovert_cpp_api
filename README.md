@@ -1,5 +1,4 @@
-# Gyrovert_CPP_LL_API
-Low Level C++ API for Devices Using Gyrovert Protocol
+# Gyrovert C++ API (Low Level)
 
 <img src="https://mp-lab.ru/wp-content/uploads/2020/07/vid-1-gkv-11-e1611912314731.png" width="100" height="100"> <img src="https://mp-lab.ru/wp-content/uploads/2022/03/-10.169-e1648714073836.jpg" width="100" height="100"> <img src="https://mp-lab.ru/wp-content/uploads/2021/08/%D0%9C%D0%93-1-1024x1024.png" width="100" height="100"> <img src="https://mp-lab.ru/wp-content/uploads/2022/04/%D0%93%D0%9A%D0%92-6-1-1024x1024.png" width="100" height="100">
 
