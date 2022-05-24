@@ -89,7 +89,6 @@ void WriteCOM(GKV_PacketBase* buf)
     int iOut = write(hSerial, buf, buf->length + 8);
     usleep(1000);
     #endif
-
 }
 
 void ReadGkvData(LMP_Device* dev)

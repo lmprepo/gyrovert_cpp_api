@@ -13,4 +13,6 @@ add_subdirectory (Example_2_ReadRawSensorsData)
 
 add_subdirectory (Example_3_AlgorithmSelectionExample)
 
+add_subdirectory (Example_4_FileWriterExample)
+
 

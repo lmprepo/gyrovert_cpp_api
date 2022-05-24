@@ -39,14 +39,8 @@
 #include <stdint.h>
 #include <iostream>
 #include <string.h>
-#include <fstream>
 #include <stdio.h>
 #include <functional>
-#include <thread>
-
-#ifdef __linux
-#include <pthread.h>
-#endif
 
 namespace Gyrovert
 {
@@ -111,8 +105,7 @@ namespace Gyrovert
         //void RunDevice();
         uint8_t Receive_Process(char* data_ptr, uint16_t buffer_size);
 
-        void StartWriteBinaryData();
-        void StopWriteBinaryData(){ DataWritingEnabled = false; }
+
 
         void Send_Data();
         void Configure_Output_Packet(uint8_t type, void* data_ptr, uint8_t size);
@@ -191,26 +184,15 @@ namespace Gyrovert
         uint8_t check(GKV_PacketBase* pack);
         uint8_t put(uint8_t b);
 
-        void dataNewThreadReceiveFcn();
-        void dataNewThreadWriteFcn();
+
 
         void SendEmptyPacket(uint8_t type);
         void RecognisePacket(GKV_PacketBase* buf);
 
         std::function<void(LMP_Device *, GKV_PacketBase *)> GKV_PacketProcessingCallback = nullptr;
 
-        std::thread Receiver;
-        //Data Logger Parameters
-        std::thread Logger;
-        char* buffer_1;
-        char* buffer_2;
-        uint32_t buffer_point_1 = 0;
-        uint32_t buffer_point_2 = 0;
-        uint8_t WritingMode = 0;
-        bool WriteBuffer1Flag = false;
-        bool WriteBuffer2Flag = false;
-        std::string filePath;
-        std::ofstream outfile;
+
+
 
         uint8_t InputPacket[sizeof(GKV_PacketBase)] = { 0 };
         GKV_PacketBase* Output_Packet = new GKV_PacketBase;
@@ -240,8 +222,7 @@ namespace Gyrovert
         bool CustomPacketParamRequestedFlag = false;
         bool CustomPacketParamReceivedFlag = false;
         bool DataRequestedFlag = false;
-        bool gkv_open = true;
-        bool DataWritingEnabled = false;
+
 
 
 

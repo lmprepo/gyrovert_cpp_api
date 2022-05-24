@@ -3,13 +3,11 @@
 #include <iostream>
 #include <stdio.h>
 #include <direct.h>
-#include "GKV_Device.h"
+#include "GKV_FileWriter.h"
 using namespace Gyrovert;
 using namespace std;
 
-
 string GetCurrentPath();
-
 
 int main()
 {
@@ -18,20 +16,17 @@ int main()
     cin >> com_port;
     cout << "#start connecting to " << com_port << "\n";
     /* Create GKV Device Object GKV */
-    GKV_Device* GKV = new GKV_Device(com_port, 921600);
-    if (!(GKV->GetSerialConnectionState())) return 0;
+    GKV_FileWriter GKV(com_port, GKV_BDRT921600);
     /* Show current folder */
     cout << "Writing data to " << GetCurrentPath() << '\n';
     /* GKV Settings */
-    //GKV->RunDevice(); /* Run Thread For Receiving Data From GKV */
-    GKV->StartWriteBinaryData();
+    GKV.StartWriteBinaryData();
     cout << "#start main loop\n";
-
     while (1)
     {
         //do something
     }
-    GKV->StopWriteBinaryData();
+    GKV.StopWriteBinaryData();
     return 0;
 }
 

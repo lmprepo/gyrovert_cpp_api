@@ -44,9 +44,6 @@ namespace Gyrovert
     LMP_Device::LMP_Device()
     {
         memset(CurrentReceivedPacket, 0, sizeof(GKV_PacketBase));
-        filePath = "LogData.bin";// Default name of LogFile (can be changed with date-time)
-        buffer_1 = new char[100000];
-        buffer_2 = new char[100000];
     }
 
     /**
@@ -56,28 +53,9 @@ namespace Gyrovert
       */
     LMP_Device::~LMP_Device()
     {
-        delete[] buffer_1;
-        delete[] buffer_2;
-        gkv_open = false;
-        Receiver.join();
-        Logger.join();
     }
 
-    /**
-      * @name	StartWriteBinaryData
-      * @brief  Function sets flag for writing data to log file
-      * @param  no parameters
-      * @retval no return value.
-      */
-    void LMP_Device::StartWriteBinaryData() {
-        time_t t = time(0);
-        struct tm* now = localtime(&t);
-        char buffer[80];
-        strftime(buffer, 80, "%Y-%m-%d-%H-%M-%S", now);
-        std::string str(buffer);
-        filePath = "LogData_" + str + ".bin";
-        DataWritingEnabled = true;
-    }
+
 
     /**
       * @name	SetSendDataFunction
@@ -990,88 +968,7 @@ namespace Gyrovert
             break;
         }
         }
-        if (DataWritingEnabled)
-        {
-            if (WritingMode == 0)
-            {
-                memcpy(&(buffer_1[buffer_point_1]), buf, ((buf->length) + 8));
-                buffer_point_1 += ((buf->length) + 8);
-                if (buffer_point_1 > (100000 - 0xFFFF))
-                {
-                    WritingMode = 1;
-                    WriteBuffer1Flag = true;
-                }
-            }
-            else
-            {
-                memcpy(&(buffer_2[buffer_point_2]), buf, ((buf->length) + 8));
-                buffer_point_2 += ((buf->length) + 8);
-                if (buffer_point_2 > (100000 - 0xFFFF))
-                {
-                    WritingMode = 0;
-                    WriteBuffer2Flag = true;
-                }
-            }
-        }
     }
 
-    ///**
-    //  * @name	dataNewThreadReceiveFcn
-    //  * @brief  Function of GKV data receiving thread main cycle
-    //  * @retval no return value.
-    //  */
-    //void LMP_Device::dataNewThreadReceiveFcn()
-    //{
-    //    while (gkv_open)
-    //    {
-    //        Receive_Process();
-    //        _sleep(10);
-    //    }
-    //}
-
-    /**
-      * @name	dataNewThreadWriteFcn
-      * @brief  Function of GKV data writing thread main cycle
-      * @retval no return value.
-      */
-    void LMP_Device::dataNewThreadWriteFcn()
-    {
-        while (gkv_open)
-        {
-            if (DataWritingEnabled)
-            {
-                if (WriteBuffer1Flag == true)
-                {
-                    outfile.open(filePath, std::ios::binary | std::ios::app);
-                    outfile.write(buffer_1, buffer_point_1);
-                    buffer_point_1 = 0;
-                    WriteBuffer1Flag = false;
-                    outfile.close();
-                }
-                if (WriteBuffer2Flag == true)
-                {
-                    outfile.open(filePath, std::ios::binary | std::ios::app);
-                    outfile.write(buffer_2, buffer_point_2);
-                    buffer_point_2 = 0;
-                    WriteBuffer2Flag = false;
-                    outfile.close();
-                }
-            }
-        }
-    }
-
-    /**
-      * @name	RunDevice
-      * @brief  Function creates and runs new thread for receiving and parsing GKV Data
-      * @retval no return value.
-      */
-    //void LMP_Device::RunDevice()
-    //{
-    //    //Receive_Process();
-    //    Receiver = std::move(std::thread(&LMP_Device::dataNewThreadReceiveFcn, this));
-    //    Logger = std::move(std::thread(&LMP_Device::dataNewThreadWriteFcn, this));
-    //    RequestSettings();
-    //    RequestDeviceID();
-    //    RequestCustomPacketParams();
-    //}
+ 
 }
