@@ -34,12 +34,7 @@ int main()
 
 string GetCurrentPath() {
     char buff[FILENAME_MAX];
-#ifdef _WIN32
-    _getcwd(buff, FILENAME_MAX);
-#endif
-#ifdef __linux
     getcwd(buff, FILENAME_MAX);
-#endif
     string current_working_dir(buff);
     return current_working_dir;
 }
