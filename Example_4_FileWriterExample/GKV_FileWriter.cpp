@@ -90,7 +90,12 @@ void GKV_FileWriter::dataNewThreadReceiveFcn()
     while (gkv_open)
     {
         ReadGkvData();
-        _sleep(10);
+        #ifdef _WIN32
+            _sleep(10);
+        #endif
+        #ifdef __linux
+            usleep(10000);
+        #endif
     }
 }
 

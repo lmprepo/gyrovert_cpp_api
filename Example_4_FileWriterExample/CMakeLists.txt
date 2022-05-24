@@ -10,7 +10,7 @@ add_library(GKV_FileWriter
 
     target_compile_features(GKV_FileWriter PRIVATE cxx_std_17)
 
-    target_link_libraries(GKV_FileWriter ${CMAKE_THREAD_LIBS_INIT})
+
 
     target_link_libraries(GKV_FileWriter PRIVATE LMP_CommunicationLibrary)
 

@@ -3,10 +3,10 @@
 
 #ifdef _WIN32
 #include <windows.h>
-#include <thread>
 #define SerialPortHandle HANDLE
 #define GKV_BDRT921600 921600
 #endif
+#include <thread>
 #ifdef __linux
 #include <stdlib.h>
 #include <unistd.h>
