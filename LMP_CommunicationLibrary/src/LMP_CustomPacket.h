@@ -52,11 +52,13 @@
 /** 
   * @brief  Any algorithm. Packet 0x13 with custom parameters that can be selected instead standart packet of each algorithm (receive only).
   */
+#pragma pack(push, 1)
 typedef struct __GKV_CustomData
 {
 	//uint8_t number_of_parameters;           /*	number of parameters that device sends in custom packet	*/
-	float parameter[65];                    /*	value of parameter N from list of 'custom_data_parameters'	*/
+    float parameter[63];                    /*	value of parameter N from list of 'custom_data_parameters'	*/
 }GKV_CustomData;
+#pragma pack(pop)
 
 
 #define GKV_CUSTOM_PACKET_PARAMS_QUANTITY                                   0X6D

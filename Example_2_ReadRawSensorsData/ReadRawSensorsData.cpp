@@ -1,13 +1,24 @@
 ﻿#ifdef _WIN32
-
 #include <windows.h>
+#define SerialPortHandle HANDLE
+#define GKV_BAUDRATE_921600 921600
+#endif
+#ifdef __linux
+#include <stdlib.h>
+#include <unistd.h>
+#include <fcntl.h>
+#include <termios.h>
+#define SerialPortHandle int
+#define GKV_BAUDRATE_921600 B921600
+#endif
+
 #include <iostream>
 #include <stdio.h>
 #include "LMP_Device.h"
 using namespace Gyrovert;
 using namespace std;
 
-HANDLE hSerial;
+SerialPortHandle hSerial;
 uint8_t algorithm_selected = 0;
 
 bool InitSerialPort(string port_name, int32_t baudrate);
@@ -25,8 +36,10 @@ int main()
     //Create LMP Device Object GKV
     LMP_Device* GKV = new LMP_Device();
     //Serial Port Settings For Windows
+    #ifdef _WIN32
     com_port = "\\\\.\\" + com_port;
-    if (!(InitSerialPort(com_port, 921600))) return 1;
+    #endif
+    if (!(InitSerialPort(com_port, GKV_BAUDRATE_921600))) return 1;
     // GKV Settings
     GKV->SetSendDataFunction(WriteCOM);/*Set User Function That Sends Data to Serial Port connected to GKV*/
     GKV->SetRawDataReceivedCallback(ShowPacketData);/*Set User Callback for Parsed Sensors Data Packet*/
@@ -44,21 +57,52 @@ int main()
     return 0;
 }
 
-/* Write data to serial port Using LMP_Device Commands*/
-void WriteCOM(GKV_PacketBase* buf)
+
+
+/*Sensors Data Packet Receive Callback*/
+void ShowPacketData(LMP_Device* GKV, GKV_RawData* packet)
 {
-    DWORD dwBytesWritten;
-    char iRet = WriteFile(hSerial, buf, buf->length + 8, &dwBytesWritten, NULL);/* Write to serial Port Command/Request Pakcet Data with header (4 bytes) and CRC32 (4 bytes) */
-    _sleep(1);
+    string output_str;
+    output_str.append("Sensors Data Packet: ");
+    output_str.append("Sample Counter = " + std::to_string(packet->sample_cnt));
+    output_str.append(" ax = " + std::to_string(packet->a[0]));
+    output_str.append(" ay = " + std::to_string(packet->a[1]));
+    output_str.append(" az = " + std::to_string(packet->a[2]));
+    output_str.append(" wx = " + std::to_string(packet->w[0]));
+    output_str.append(" wy = " + std::to_string(packet->w[1]));
+    output_str.append(" wz = " + std::to_string(packet->w[2]));
+    cout << output_str << endl;
+    algorithm_selected = 1;
 }
 
-/* Read Serial Port Data and Process it with LMP_Device ReceiveProcess Function */
+/* Write data to serial port Using LMP_Device Commands*/
+
+void WriteCOM(GKV_PacketBase* buf)
+{
+    #ifdef _WIN32
+    DWORD dwBytesWritten;
+    char iRet = WriteFile(hSerial, buf, buf->length + 8, &dwBytesWritten, NULL);
+    _sleep(1);
+    #endif
+    #ifdef __linux
+    int iOut = write(hSerial, buf, buf->length + 8);
+    usleep(1000);
+    #endif
+
+}
+
 void ReadGkvData(LMP_Device* dev)
 {
     static char ReceivedData[2048] = { 0 };
-    DWORD iSize;
-    char iRet = 0;
+    ssize_t iSize;
+    ssize_t iRet = 0;
+    #ifdef _WIN32
     iRet = ReadFile(hSerial, &ReceivedData, sizeof(ReceivedData), &iSize, 0);
+    #endif
+    #ifdef __linux
+    iRet = read(hSerial, &ReceivedData, sizeof(ReceivedData));
+    iSize=iRet;
+    #endif
     if (iRet)
     {
         if (iSize > 0)
@@ -68,25 +112,9 @@ void ReadGkvData(LMP_Device* dev)
     }
 }
 
-/*Sensors Data Packet Receive Callback*/
-void ShowPacketData(LMP_Device* GKV, GKV_RawData* packet)
-{
-    string output_str;
-    output_str.append("Sensors Data Packet: ");
-    output_str.append("Sample Counter = " + std::to_string(packet->sample_cnt));
-    output_str.append(" ax = " + std::to_string((float)packet->a[0]));
-    output_str.append(" ay = " + std::to_string((float)packet->a[1]));
-    output_str.append(" az = " + std::to_string((float)packet->a[2]));
-    output_str.append(" wx = " + std::to_string((float)packet->w[0]));
-    output_str.append(" wy = " + std::to_string((float)packet->w[1]));
-    output_str.append(" wz = " + std::to_string((float)packet->w[2]));
-    cout << output_str << endl;
-    algorithm_selected = 1;
-}
-
-/*Serial Port initialization Function for Windows and Linux*/
 bool InitSerialPort(string port_name, int32_t baudrate)
 {
+    #ifdef _WIN32
     hSerial = ::CreateFileA(port_name.c_str(), GENERIC_READ | GENERIC_WRITE, 0, 0, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, 0);
     if (hSerial == INVALID_HANDLE_VALUE)
     {
@@ -116,59 +144,10 @@ bool InitSerialPort(string port_name, int32_t baudrate)
         cout << "error setting serial port state\n";
         return 0;
     }
-    return 1;
-}
-#else
-#include <stdlib.h>
-#include <unistd.h>
-#include <fcntl.h>
-#include <termios.h>
-#include <iostream>
-#include <stdio.h>
-#include "LMP_Device.h"
-using namespace Gyrovert;
-using namespace std;
-
-int SerialPortHandle;
-uint8_t algorithm_selected = 0;
-LMP_Device* GKV;
-bool InitSerialPort(string port_name, int32_t baudrate);
-char* ReadCOM();
-void WriteCOM(GKV_PacketBase* buf);
-void ShowPacketData(LMP_Device* GKV, GKV_ADCData* buf);
-
-int main()
-{
-    string com_port;
-    cout << "Set Serial Port:";
-    cin >> com_port;
-    cout << "#start connecting to " << com_port << "\n";
-    /* Create LMP Device Object GKV */
-    GKV = new LMP_Device();
-    /* Serial Port Settings For Linux */
-    if (!(InitSerialPort(com_port, B921600))) return 1;
-    /* GKV Settings */
-    GKV->SetSendDataFunction(WriteCOM);//Set User Function That Sends Data to Serial Port connected to GKV
-    GKV->SetReceiveDataFunction(ReadCOM);//Set User Function That Receives Data From Serial Port And Returns Received Byte
-    GKV->SetADCDataReceivedCallback(ShowPacketData);//Set User Callback for Parsed ADC GKV Packet
-    GKV->RunDevice();//Run Thread For Receiving Data From GKV
-    while (!(algorithm_selected))
-    {
-        GKV->SetDefaultAlgorithmPacket();
-        GKV->SetAlgorithm(GKV_ADC_CODES_ALGORITHM);
-    }
-    cout << "#start main loop\n";
-    while (1)
-    {
-        //do something
-    }
-    return 0;
-}
-
-bool InitSerialPort(string port_name, int32_t baudrate)
-{
-    SerialPortHandle = open(port_name.c_str(), O_RDWR | O_NOCTTY);
-    if (SerialPortHandle < 0) {
+    #endif
+    #ifdef __linux
+    hSerial = open(port_name.c_str(), O_RDWR | O_NOCTTY);
+    if (hSerial < 0) {
         printf("Error opening port\n");
         return 0;
     }
@@ -176,7 +155,7 @@ bool InitSerialPort(string port_name, int32_t baudrate)
     struct termios tty_old;
     memset(&tty, 0, sizeof tty);
     /* Error Handling */
-    if (tcgetattr(SerialPortHandle, &tty) != 0) {
+    if (tcgetattr(hSerial, &tty) != 0) {
         cout << "Error " << errno << " from tcgetattr: " << strerror(errno) << endl;
         return 0;
     }
@@ -198,49 +177,11 @@ bool InitSerialPort(string port_name, int32_t baudrate)
     /* Make raw */
     cfmakeraw(&tty);
     /* Flush Port, then applies attributes */
-    tcflush(SerialPortHandle, TCIFLUSH);
-    if (tcsetattr(SerialPortHandle, TCSANOW, &tty) != 0) {
+    tcflush(hSerial, TCIFLUSH);
+    if (tcsetattr(hSerial, TCSANOW, &tty) != 0) {
         cout << "Error " << errno << " from tcsetattr" << endl;
         return 0;
     }
+    #endif
     return 1;
 }
-
-void WriteCOM(GKV_PacketBase* buf)
-{
-    int iOut = write(SerialPortHandle, buf, buf->length + 8);
-    usleep(1000);
-}
-
-char* ReadCOM()
-{
-    static char ReceivedData[2048] = { 0 };
-    while (true)
-    {
-        int iOut = read(SerialPortHandle, &ReceivedData, 2048);
-        GKV->SetReceiveBufferSize(iOut);
-        return &ReceivedData;
-    }
-    return 0;
-}
-
-void ShowPacketData(LMP_Device* GKV, GKV_ADCData* packet)
-{
-    char str[30];
-    sprintf(str, "%d", packet->sample_cnt);
-    cout << "Sample Counter = " << str << ' ';
-    sprintf(str, "%d", packet->a[0]);
-    cout << "ax = " << str << ' ';
-    sprintf(str, "%d", packet->a[1]);
-    cout << "ay = " << str << ' ';
-    sprintf(str, "%d", packet->a[2]);
-    cout << "az = " << str << ' ';
-    sprintf(str, "%d", packet->w[0]);
-    cout << "wx = " << str << ' ';
-    sprintf(str, "%d", packet->w[1]);
-    cout << "wy = " << str << ' ';
-    sprintf(str, "%d", packet->w[2]);
-    cout << "wz = " << str << endl;
-    algorithm_selected = 1;
-}
-#endif

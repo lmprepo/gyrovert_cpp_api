@@ -105,6 +105,7 @@
 /** 
   * @brief  ADC codes algorithm. Packet 0x0A with non-calibrated sensors data (receive only)
   */
+#pragma pack(push, 1)
 typedef struct __GKV_ADCData
 {
 	uint16_t sample_cnt;										/*	0-65535 counter to detect number of lost packets	*/
@@ -113,6 +114,7 @@ typedef struct __GKV_ADCData
 	int32_t w[3];												/*	rate sensor non-calibrated	X Y Z axis data in 24 bit ADC codes	*/
 	int32_t t[4];												/*	X Y Z axis and CPU temperature data in 12 bit ADC	*/
 }GKV_ADCData;
+#pragma pack(pop)
 
 
 /*-----------------------------------------------RAW_DATA_ALOGORITHM----------------------------------------------------------------*/
@@ -131,6 +133,7 @@ typedef struct __GKV_ADCData
 /** 
   * @brief  Sensors data algorithm. Packet 0x0B with calibrated data of gyroscope, accelerometer and temperature sensors for every axis and cpu (receive only)
   */
+#pragma pack(push, 1)
 typedef struct __GKV_RawData
 {
 	uint16_t sample_cnt;										/*	0-65535 counter to detect number of lost packets	*/
@@ -139,6 +142,7 @@ typedef struct __GKV_RawData
 	float w[3];													/*	rate sensor calibrated	X Y Z axis data in deg/s or rad/s	*/
 	float t[4];													/*	X Y Z axis and CPU temperature data in Celsius degrees 	*/
 }GKV_RawData;
+#pragma pack(pop)
 
 
 
@@ -158,7 +162,7 @@ typedef struct __GKV_RawData
 /** 
   * @brief  Kalman filter algorithm. Packet 0x0C with basic orientation data (euler angles) calculated using Kalman/Mahony filter (receive only)
   */
-
+#pragma pack(push, 1)
 typedef struct __GKV_GyrovertData
 {
 	uint16_t sample_cnt;                                        /*	0-65535 counter to detect number of lost packets	*/
@@ -167,6 +171,7 @@ typedef struct __GKV_GyrovertData
 	float roll;									                /*	roll Euler angle	*/
 	float yaw;                                                  /*	yaw Euler angle	*/
 }GKV_GyrovertData;
+#pragma pack(pop)
 
 
 
@@ -185,6 +190,7 @@ typedef struct __GKV_GyrovertData
 /** 
   * @brief  Inclinometer algorithm. Packet 0x0D with inclinometer angles (receive only)
   */
+#pragma pack(push, 1)
 typedef struct __GKV_InclinometerData
 {
 	uint16_t sample_cnt; /*	0-65535 counter to detect number of lost packets	*/
@@ -192,6 +198,7 @@ typedef struct __GKV_InclinometerData
 	float alfa; /*	inclinometer angle alfa	(XZ)    */
 	float beta; /*	inclinometer angle beta (YZ)    */
 }GKV_InclinometerData;
+#pragma pack(pop)
 
 
 
@@ -209,6 +216,7 @@ typedef struct __GKV_InclinometerData
 /** 
   * @brief  BINS algorithm. Packet 0x12 with navigation data as position (x,y,z), Euler angles, inclinometer angles and orientation quaternion (receive only)   !!!!
   */
+#pragma pack(push, 1)
 typedef struct __GKV_BINSData
 {
 	uint16_t sample_cnt;                                        /*	0-65535 counter to detect number of lost packets	*/
@@ -223,6 +231,7 @@ typedef struct __GKV_BINSData
 	float beta;									                /*	inclinometer angle beta	YZ  */
 	float q[4];				                                    /*	orientation quaternion q3 q2 q1 q0	*/
 }GKV_BINSData;
+#pragma pack(pop)
 
 
 /*-----------------------------------------------GNSS_NAVIGATION_ALGORITHM------------------------------------------------------------*/
@@ -237,10 +246,10 @@ typedef struct __GKV_BINSData
   * @}
   */
 
-#pragma pack(push, 1)
 /** 
   * @brief  If GNSS receiver is connected GKV can send packet 0x0E with GNSS data without correction from inertial system   !!!!
   */
+#pragma pack(push, 1)
 typedef struct __GKV_GpsData
 {
 	uint32_t time;								                    /*	Coordinated Universal Time	(UTC)*/
@@ -363,4 +372,4 @@ typedef struct __GKV_GpsDataExt
 
 
 
-#endif
+#endif
