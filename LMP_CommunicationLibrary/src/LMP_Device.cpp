@@ -253,10 +253,6 @@ namespace Gyrovert
         {
             ptrSendFun(Output_Packet);
         }
-        else
-        {
-            WriteDataToGKV(Output_Packet);
-        }
     }
 
     /**

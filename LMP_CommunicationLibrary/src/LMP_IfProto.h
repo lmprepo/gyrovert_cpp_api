@@ -133,7 +133,9 @@ struct IfCanMessage
 	};
 
 	uint16_t prescaler; // 0 - сообщение отключено
+	uint16_t reserved; // в т.ч. для выравнивания limit
 	CanId id;
+	float limit;
 
 	//Q_GADGET
 	//Q_ENUM(EIndex)
