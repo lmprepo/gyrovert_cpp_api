@@ -63,7 +63,7 @@ typedef struct __GKV_CustomData
 
 #define GKV_CUSTOM_PACKET_PARAMS_QUANTITY                                   0X6D
 /** @defgroup CUSTOM_PACKET_PARAMETERS
-  * @brief 		LIST OF PARAMETER CODES FOR CUSTOM RESPONSE PACKET
+  * @brief 	LIST OF PARAMETER CODES FOR CUSTOM RESPONSE PACKET
   * @{
   */
 #define GKV_STATUS 														    0x00					/* device status */

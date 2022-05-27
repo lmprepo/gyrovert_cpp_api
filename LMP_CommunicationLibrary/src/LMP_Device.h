@@ -157,7 +157,7 @@ namespace Gyrovert
         void SetBINSDataReceivedCallback(std::function<void(LMP_Device*, GKV_BINSData *)> ptrReceivedPacketProcessingFun);
         void SetGNSSDataReceivedCallback(std::function<void(LMP_Device*, GKV_GpsData *)>ptrReceivedPacketProcessingFun);
         void SetExtGNSSDataReceivedCallback(std::function<void(LMP_Device*, GKV_GpsDataExt *)>ptrReceivedPacketProcessingFun);
-        void SetIfProtoCommandResponseReceivedCallback(std::function<void(IfProtoConfig*)>ptrReceivedPacketProcessingFun);
+        void SetIfProtoCommandResponseReceivedCallback(std::function<void(LMP_Device*, IfProtoConfig*)>ptrReceivedPacketProcessingFun);
 
         void SetConfirmPacketReceivedCallback(std::function<void(LMP_Device*)> ptrReceivedPacketProcessingFun);
 

@@ -51,8 +51,6 @@ int main()
     return 0;
 }
 
-/* User Callback for all parsed packets */
-
 void ShowPacketData(LMP_Device *GKV, GKV_PacketBase* buf)
 {
 std::string output_str;

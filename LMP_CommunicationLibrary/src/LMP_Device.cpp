@@ -229,7 +229,7 @@ namespace Gyrovert
       * @param  ptrReceivedPacketProcessingFun - pointer on void-type user callback function that gets pointer on received and parsed ifProto Response structure
       * @retval no return value.
       */
-    void SetIfProtoCommandResponseReceivedCallback(std::function<void(LMP_Device*, IfProtoConfig*)>ptrReceivedPacketProcessingFun)
+    void LMP_Device::SetIfProtoCommandResponseReceivedCallback(std::function<void(LMP_Device*, IfProtoConfig*)>ptrReceivedPacketProcessingFun)
     {
         ptrIfProtoPacketCallback = ptrReceivedPacketProcessingFun;
     }

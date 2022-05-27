@@ -83,7 +83,7 @@ void WriteCOM(GKV_PacketBase* buf)
     #ifdef _WIN32
     DWORD dwBytesWritten;
     char iRet = WriteFile(hSerial, buf, buf->length + 8, &dwBytesWritten, NULL);
-    _sleep(1);
+    Sleep(1);
     #endif
     #ifdef __linux
     int iOut = write(hSerial, buf, buf->length + 8);
