@@ -37,7 +37,7 @@ int main()
     LMP_Device* GKV = new LMP_Device();
     /* Serial Port Settings For Windows */
     #ifdef _WIN32
-    com_port = "\\\\.\\" + com_port;
+    com_port = "\\\\.\\" + com_port;/* Necessary for COM100+ port names*/
     #endif
     if (!(InitSerialPort(com_port, GKV_BDRT921600))) return 1;
     /* GKV Settings */
@@ -50,6 +50,8 @@ int main()
     }
     return 0;
 }
+
+/* User Callback for all parsed packets */
 
 void ShowPacketData(LMP_Device *GKV, GKV_PacketBase* buf)
 {
@@ -180,7 +182,7 @@ switch (buf->type)
     }
 }
 
-
+/* Write data to serial port Using LMP_Device Commands*/
 void WriteCOM(GKV_PacketBase* buf)
 {
     #ifdef _WIN32
@@ -195,6 +197,7 @@ void WriteCOM(GKV_PacketBase* buf)
 
 }
 
+/* Read data function for main cycle or "input buffer not empty" interrupt*/
 void ReadGkvData(LMP_Device* dev)
 {
     static char ReceivedData[2048] = { 0 };
@@ -217,6 +220,7 @@ void ReadGkvData(LMP_Device* dev)
     }
 }
 
+/* Serial port Direct Read-Write initialization function for Linux and Windows*/
 bool InitSerialPort(string port_name, int32_t baudrate)
 {
     #ifdef _WIN32

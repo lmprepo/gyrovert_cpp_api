@@ -221,6 +221,20 @@ namespace Gyrovert
     {
         ptrConfirmPacketCallback = ptrReceivedPacketProcessingFun;
     }
+
+
+    /**
+      * @name	SetIfProtoCommandResponseReceivedCallback
+      * @brief  Function sets pointer on user function for processing received and parsed response for IfProtoCommand from LMP Device
+      * @param  ptrReceivedPacketProcessingFun - pointer on void-type user callback function that gets pointer on received and parsed ifProto Response structure
+      * @retval no return value.
+      */
+    void SetIfProtoCommandResponseReceivedCallback(std::function<void(LMP_Device*, IfProtoConfig*)>ptrReceivedPacketProcessingFun)
+    {
+        ptrIfProtoPacketCallback = ptrReceivedPacketProcessingFun;
+    }
+
+
     /**
       * @name	Configure_Output_Packet
       * @brief  Function inserts selected packet structure into base packet structure, sets values for basic fields and computes crc32.
@@ -349,17 +363,38 @@ namespace Gyrovert
         * @brief  Function configures and sends IfProto Packet(type = 0x30) with selected mode of second RS-485 using IfProto Settings.
         * @retval no return value.
         */
-    void LMP_Device::SetAUXPortMode(uint8_t cmd, uint8_t port, uint16_t protocol, uint16_t baudrate, uint16_t mode)
+    void LMP_Device::SetAUXPortMode(uint8_t port, uint16_t protocol, uint16_t protocol_param, uint16_t baudrate, uint16_t mode)
     {
         struct IfProtoConfig IFProtpDataField;
         struct IfUartConfig UartConfigField;
         IFProtpDataField.iface = port;
-        IFProtpDataField.cmd = cmd;
+        IFProtpDataField.cmd = IfProtoConfig::CMD_CONFIG;
         IFProtpDataField.index = 0;
         IFProtpDataField.reserved = 0;
         UartConfigField.baudrate = baudrate;
         UartConfigField.proto = protocol;
+        UartConfigField.proto_param = protocol_param;
         UartConfigField.mode = mode;
+        memcpy(&(IFProtpDataField.payload), &UartConfigField, sizeof(UartConfigField));
+        Configure_Output_Packet(IfProtoConfig::type, &IFProtpDataField, sizeof(UartConfigField) + 4);
+        Send_Data();
+    }
+
+  /**
+  *  *@name	ForwardAUXPDataToMain
+    * @brief  Function configures and sends IfProto Packet(type = 0x30) with selected mode of second RS-485 using IfProto Settings.
+    * @retval no return value.
+    */
+    void LMP_Device::SetAUXPPassthroughParams(uint8_t port, uint16_t buf_size, uint8_t target_iface)
+    {
+        struct IfProtoConfig IFProtpDataField;
+        struct IfUartForward UartConfigField;
+        IFProtpDataField.iface = port;
+        IFProtpDataField.cmd = IfProtoConfig::CMD_FORWARD;
+        IFProtpDataField.index = 0;
+        IFProtpDataField.reserved = 0;
+        UartConfigField.buf_size = buf_size;
+        UartConfigField.iface = target_iface;
         memcpy(&(IFProtpDataField.payload), &UartConfigField, sizeof(UartConfigField));
         Configure_Output_Packet(IfProtoConfig::type, &IFProtpDataField, sizeof(UartConfigField) + 4);
         Send_Data();
@@ -391,7 +426,7 @@ namespace Gyrovert
         * @brief  Function configures and sends IfProto Packet(type = 0x30) with selected message that will be sent by CAN interface.
         * @retval no return value.
         */
-    void LMP_Device::SetCANPortMsg(uint8_t port, uint8_t index, uint16_t prescaler, uint32_t id)
+    void LMP_Device::SetCANPortMsg(uint8_t port, uint8_t index, uint16_t prescaler, CanId id, float limit)
     {
         IfProtoConfig IFProtpDataField;
         IfCanMessage CANMesField;
@@ -401,6 +436,7 @@ namespace Gyrovert
         IFProtpDataField.reserved = 0;
         CANMesField.prescaler = prescaler;
         CANMesField.id = id;
+        CANMesField.limit = limit;
         memcpy(&(IFProtpDataField.payload), &CANMesField, sizeof(CANMesField));
         Configure_Output_Packet(IfProtoConfig::type, &IFProtpDataField, sizeof(CANMesField) + 4);
         Send_Data();
@@ -960,6 +996,16 @@ namespace Gyrovert
             if (ptrConfirmPacketCallback)
             {
                 ptrConfirmPacketCallback(this);
+            }
+            break;
+        }
+        case IfProtoConfig::type:
+        {
+            IfProtoConfig data;
+            memcpy(&(data), &(buf->data), buf->length);
+            if (ptrIfProtoPacketCallback)
+            {
+                ptrIfProtoPacketCallback(this, &data);
             }
             break;
         }

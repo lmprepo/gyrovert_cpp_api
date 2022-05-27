@@ -125,9 +125,11 @@ namespace Gyrovert
         void SetSyncOutType(uint16_t type);
 
         void SetSecondRS485PortMode(uint8_t mode);
-        void SetAUXPortMode(uint8_t cmd, uint8_t port, uint16_t protocol, uint16_t baudrate, uint16_t mode);
+        void SetAUXPortMode(uint8_t port, uint16_t protocol, uint16_t protocol_param, uint16_t baudrate, uint16_t mode);
+        void SetAUXPPassthroughParams(uint8_t port, uint16_t buf_size, uint8_t target_iface);
+
         void SetCANPortMode(uint8_t port, uint16_t protocol, uint16_t baudrate);
-        void SetCANPortMsg(uint8_t port, uint8_t index, uint16_t prescaler, uint32_t id);
+        void SetCANPortMsg(uint8_t port, uint8_t index, uint16_t prescaler, CanId id, float limit);
 
         void CheckConnection();
         void RequestDeviceID();
@@ -155,6 +157,8 @@ namespace Gyrovert
         void SetBINSDataReceivedCallback(std::function<void(LMP_Device*, GKV_BINSData *)> ptrReceivedPacketProcessingFun);
         void SetGNSSDataReceivedCallback(std::function<void(LMP_Device*, GKV_GpsData *)>ptrReceivedPacketProcessingFun);
         void SetExtGNSSDataReceivedCallback(std::function<void(LMP_Device*, GKV_GpsDataExt *)>ptrReceivedPacketProcessingFun);
+        void SetIfProtoCommandResponseReceivedCallback(std::function<void(IfProtoConfig*)>ptrReceivedPacketProcessingFun);
+
         void SetConfirmPacketReceivedCallback(std::function<void(LMP_Device*)> ptrReceivedPacketProcessingFun);
 
         void clear() { CTR = 0; }
@@ -208,7 +212,9 @@ namespace Gyrovert
         std::function<void(LMP_Device*, GKV_GpsData *)>ptrGNSSDataPacketCallback = nullptr;
         std::function<void(LMP_Device*, GKV_GpsDataExt *)>ptrExtGNSSDataPacketCallback = nullptr;
         std::function<void(LMP_Device*, GKV_CustomData *)>ptrCustomDataPacketCallback = nullptr;
+        std::function<void(LMP_Device*, IfProtoConfig*)>ptrIfProtoPacketCallback = nullptr;
 
+        
 
         bool CheckConnectionRequestedFlag = false;
         bool DeviceIDRequestedFlag = false;
