@@ -36,14 +36,15 @@ int main()
     /* Create LMP Device Object GKV */
     LMP_Device* GKV = new LMP_Device();
     /* Serial Port Settings For Windows */
-    #ifdef _WIN32
+#ifdef _WIN32
     com_port = "\\\\.\\" + com_port;/* Necessary for COM100+ port names*/
-    #endif
+#endif
     if (!(InitSerialPort(com_port, GKV_BDRT921600))) return 1;
     /* GKV Settings */
     GKV->SetReceivedPacketCallback(ShowPacketData);//Set User Callback for Each Parsed GKV Packet
     GKV->SetSendDataFunction(WriteCOM);//Set User Function That Sends Data to Serial Port connected to GKV
     cout << "#start main loop\n";
+
     while (1)
     {
         ReadGkvData(GKV);

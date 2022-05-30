@@ -163,20 +163,8 @@ namespace Gyrovert
 
         void clear() { CTR = 0; }
 
-        void SetReceiveBufferSize(uint16_t size) { if (size > 0) ReceivedDataSize = size; else ReceivedDataSize = 1; }
-        uint16_t GetReceiveBufferSize() { return ReceivedDataSize;}
-
-    public:
-        struct __DeviceState
-        {
-            GKV_ID GeneralDeviceParameters;
-            GKV_Settings CurrentSettings;
-            GKV_CustomDataParam CurrentCustomPacketParameters;
-        }DeviceState;
-        uint8_t INT_PARAM_NUMBERS[10] = { GKV_ALG_INT_LAT_NOPH, GKV_ALG_INT_LON_NOPH, GKV_ALG_INT_ALT_NOPH,//parameters of GKV in int32 format
-                                 GKV_ALG_INT_LAT,GKV_ALG_INT_LON ,GKV_GNSS_INT_LAT,
-                                 GKV_GNSS_INT_LON, GKV_GPS_INT_X, GKV_GPS_INT_Y, GKV_GPS_INT_Z };//params of GKV in uint32 format
-        uint8_t UINT_PARAM_NUMBERS[3] = { GKV_UTC_TIME, GKV_GNSS_STATUS, GKV_ALG_STATE_STATUS };
+        bool IsCustomParameterUint32(uint8_t parameter_index);
+        bool IsCustomParameterInt32(uint8_t parameter_index);
     private:
 
         uint8_t parseCycle();
@@ -236,6 +224,16 @@ namespace Gyrovert
 
         uint16_t ReceivedDataSize = 1;
 
+        struct __DeviceState
+        {
+            GKV_ID GeneralDeviceParameters;
+            GKV_Settings CurrentSettings;
+            GKV_CustomDataParam CurrentCustomPacketParameters;
+        }DeviceState;
+        uint8_t INT_PARAM_NUMBERS[10] = { GKV_ALG_INT_LAT_NOPH, GKV_ALG_INT_LON_NOPH, GKV_ALG_INT_ALT_NOPH,//parameters of GKV in int32 format
+                                 GKV_ALG_INT_LAT,GKV_ALG_INT_LON ,GKV_GNSS_INT_LAT,
+                                 GKV_GNSS_INT_LON, GKV_GPS_INT_X, GKV_GPS_INT_Y, GKV_GPS_INT_Z };//params of GKV in uint32 format
+        uint8_t UINT_PARAM_NUMBERS[3] = { GKV_UTC_TIME, GKV_GNSS_STATUS, GKV_ALG_STATE_STATUS };
 
     };
 }

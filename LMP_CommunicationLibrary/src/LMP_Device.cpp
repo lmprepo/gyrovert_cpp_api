@@ -53,6 +53,8 @@ namespace Gyrovert
       */
     LMP_Device::~LMP_Device()
     {
+        delete(Output_Packet);
+        delete(CurrentReceivedPacket);
     }
 
 
