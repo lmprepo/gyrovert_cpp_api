@@ -1,6 +1,6 @@
 # Gyrovert C++ API (Low Level)
 
-<img src="https://mp-lab.ru/wp-content/uploads/2020/07/vid-1-gkv-11-e1611912314731.png" width="100" height="100"> <img src="https://mp-lab.ru/wp-content/uploads/2022/03/IMG_20220422_125424-1024x1024.png" width="100" height="100">
+<img src="https://mp-lab.ru/wp-content/uploads/2020/07/Izometria-IMG_20221122_175423.webp" width="100" height="100"> <img src="https://mp-lab.ru/wp-content/uploads/2022/04/gkv-6-1-1024x1024-1.webp" width="100" height="100">
 
 
 Данный репозиторий включает библиотеку для приема данных и настройки параметров инерциальных модулей серий ГКВ и МГ производства ООО "Лаборатория Микроприборов", а также четыре консольных примера для Windows и Linux:
