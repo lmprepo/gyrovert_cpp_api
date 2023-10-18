@@ -324,6 +324,29 @@ namespace Gyrovert
         Send_Data();
     }
 
+
+    /**
+    *@name	SetSkipOutputPackets
+    * @brief  Function configures and sends Settings Packet(type = 0x07) with selected data packet skip number from current frequency selected by SetDataRatePrescaler().
+              Recommended for navigation data, not for raw sensor data.
+    * @param  data_out_skip - quantity of packets skipped
+    * @retval no return value.
+    */
+    void LMP_Device::SetSkipOutputPackets(uint8_t data_out_skip)
+    {
+        GKV_Settings GKV_Settings;
+        memset(&GKV_Settings, 0, sizeof(GKV_Settings));
+        uint8_t type = GKV_DEV_SETTINGS_PACKET;
+
+        if (data_out_skip <= 255)
+        {
+            GKV_Settings.param_mask |= GKV_SKIP_PACKETS;
+            GKV_Settings.data_out_skip = data_out_skip;
+        }
+        Configure_Output_Packet(type, &GKV_Settings, sizeof(GKV_Settings));
+        Send_Data();
+    }
+
     /**
     *@name	SetSecondRS485PortMode
     * @brief  Function configures and sends Settings Packet(type = 0x07) with selected mode of second RS-485
