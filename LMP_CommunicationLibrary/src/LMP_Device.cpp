@@ -226,6 +226,29 @@ namespace Gyrovert
 
 
     /**
+      * @name	SetGyroOffsetsWrittenCallback
+      * @brief  Function sets pointer on user function for processing received and parsed request confirmation packet of gyro offsets writing (type 0x1D) from LMP Device
+      * @param  ptrReceivedPacketProcessingFun - pointer on void-type user callback function that gets pointer on device object
+      * @retval no return value.
+      */
+    void LMP_Device::SetGyroOffsetsWrittenCallback(std::function<void(LMP_Device*)> ptrReceivedPacketProcessingFun)
+    {
+        ptrGyroOffsetsWrittenCallback = ptrReceivedPacketProcessingFun;
+    }
+
+    /**
+          * @name	SetGyroOffsetsReceivedCallback
+          * @brief  Function sets pointer on user function for processing received and parsed packet with gyro offsets (type 0x1E) from LMP Device
+          * @param  ptrReceivedPacketProcessingFun - pointer on void-type user callback function that gets pointer on device object
+          * @retval no return value.
+          */
+    void LMP_Device::SetGyroOffsetsReceivedCallback(std::function<void(LMP_Device*, GKV_GyroOffset*)>ptrReceivedPacketProcessingFun)
+    {
+        ptrGyroOffsetsReceivedCallback = ptrReceivedPacketProcessingFun;
+    }
+
+
+    /**
       * @name	SetIfProtoCommandResponseReceivedCallback
       * @brief  Function sets pointer on user function for processing received and parsed response for IfProtoCommand from LMP Device
       * @param  ptrReceivedPacketProcessingFun - pointer on void-type user callback function that gets pointer on received and parsed ifProto Response structure
@@ -668,6 +691,44 @@ namespace Gyrovert
     }
 
     /**
+      * @name	CalculateGyroOffsets
+      * @brief  Function Configures and sends Packet with number of samples for gyro offset calculation (type=0x1C)
+      * @retval no return value.
+      */
+    void LMP_Device::CalculateGyroOffsets(uint32_t samples)
+    {
+        GKV_GyroOffsetCalc gyroOffsetRequest;
+        gyroOffsetRequest.samples = samples;
+        Configure_Output_Packet(GKV_GYRO_OFFSET_CALC_REQUEST, &gyroOffsetRequest, sizeof(gyroOffsetRequest));
+        Send_Data();
+    }
+
+    /**
+      * @name	RequestGyroOffsets
+      * @brief  Function Configures and sends Empty Packet with Request of Gyro offsets for selected samples numbers (type=0x1D)
+      * @retval no return value.
+      */
+    void LMP_Device::RequestGyroOffsets()
+    {
+        SendEmptyPacket(GKV_GYRO_OFFSET_REQUEST);
+    }
+    /**
+      * @name	SetGyroOffsets
+      * @brief  Function Configures and sends Packet with Gyro offsets in 24bit ADC-codes (type=0x1E)
+      * @retval no return value.
+      */
+    void LMP_Device::SetGyroOffsets(int32_t offset_x, int32_t offset_y, int32_t offset_z)
+    {
+        GKV_GyroOffset gyroOffsets;
+        gyroOffsets.x_900 = offset_x;
+        gyroOffsets.y_900 = offset_y;
+        gyroOffsets.z_900 = offset_z;
+        Configure_Output_Packet(GKV_GYRO_OFFSET_PACKET, &gyroOffsets, sizeof(gyroOffsets));
+        Send_Data();
+    }
+
+
+    /**
       * @name	ResetDevice
       * @brief  Function Configures and sends Empty Packet with Request of Custom Parameters List Type (type=0x26)
       * @retval no return value.
@@ -982,7 +1043,8 @@ namespace Gyrovert
             if (ptrCustomDataPacketCallback)
             {
                 ptrCustomDataPacketCallback(this, &data);
-            }        break;
+            }
+            break;
         }
         case GKV_DEV_ID_PACKET:
         {
@@ -1021,6 +1083,24 @@ namespace Gyrovert
             if (ptrConfirmPacketCallback)
             {
                 ptrConfirmPacketCallback(this);
+            }
+            break;
+        }
+        case GKV_GYRO_OFFSET_REQUEST:
+        {
+            if (ptrGyroOffsetsWrittenCallback)
+            {
+                ptrGyroOffsetsWrittenCallback(this);
+            }
+            break;
+        }
+        case GKV_GYRO_OFFSET_PACKET:
+        {
+            GKV_GyroOffset data;
+            memcpy(&(data), &(buf->data), buf->length);
+            if (ptrGyroOffsetsReceivedCallback)
+            {
+                ptrGyroOffsetsReceivedCallback(this, &data);
             }
             break;
         }
