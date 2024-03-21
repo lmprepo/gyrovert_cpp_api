@@ -259,6 +259,17 @@ namespace Gyrovert
         ptrIfProtoPacketCallback = ptrReceivedPacketProcessingFun;
     }
 
+    /**
+      * @name	SetCorrectionResponseReceivedCallback
+      * @brief  Function sets pointer on user function for processing received and parsed response for IfProtoCommand from LMP Device
+      * @param  ptrReceivedPacketProcessingFun - pointer on void-type user callback function that gets pointer on received and parsed ifProto Response structure
+      * @retval no return value.
+      */
+    void LMP_Device::SetCorrectionResponseReceivedCallback(std::function<void(LMP_Device*, Measurement*)>ptrReceivedPacketProcessingFun)
+    {
+        ptrCorrectionResponsePacketCallback = ptrReceivedPacketProcessingFun;
+    }
+
 
     /**
       * @name	Configure_Output_Packet
@@ -712,6 +723,7 @@ namespace Gyrovert
     {
         SendEmptyPacket(GKV_GYRO_OFFSET_REQUEST);
     }
+
     /**
       * @name	SetGyroOffsets
       * @brief  Function Configures and sends Packet with Gyro offsets in 24bit ADC-codes (type=0x1E)
@@ -727,6 +739,140 @@ namespace Gyrovert
         Send_Data();
     }
 
+
+    /**
+      * @name	SendYawCorrection
+      * @brief  Function sends packet including navigation yaw angle correction and sigma for it at selected timestamp
+      * @retval no return value.
+      */
+    void LMP_Device::SendYawCorrection(float yaw, float sig, Measurement::ETimestampType ts_type, uint16_t timestamp)
+    {
+        Measurement CorrectionStruct;
+        Measurement::Yaw yaw_correction;
+        yaw_correction.yaw = yaw;
+        yaw_correction.sig = sig;
+        CorrectionStruct.set_type(Measurement::Yaw::type);
+        CorrectionStruct.set_timestamp_type(ts_type);
+        CorrectionStruct.timestamp = timestamp;
+        memcpy(&(CorrectionStruct.payload), &(yaw_correction), sizeof(yaw_correction));
+        Configure_Output_Packet(Measurement::type, &(CorrectionStruct.param),CorrectionStruct.length());
+        Send_Data();
+    }
+
+    /**
+      * @name	SendAttitudeCorrection
+      * @brief  Function sends packet including yaw,pitch and roll angles correction and sigma for them at selected timestamp
+      * @retval no return value.
+      */
+    void LMP_Device::SendAttitudeCorrection(float yaw, float pitch, float roll, float y_sig, float p_sig, float r_sig, Measurement::ETimestampType ts_type, uint16_t timestamp)
+    {
+        Measurement CorrectionStruct;
+        Measurement::YawPitchRoll orient_correction;
+        orient_correction.yaw = yaw;
+        orient_correction.sig_yaw = y_sig;
+        orient_correction.pitch = pitch;
+        orient_correction.sig_pitch = p_sig;        
+        orient_correction.roll = roll;
+        orient_correction.sig_roll = r_sig;
+        CorrectionStruct.set_type(Measurement::YawPitchRoll::type);
+        CorrectionStruct.set_timestamp_type(ts_type);
+        CorrectionStruct.timestamp = timestamp;
+        memcpy(&(CorrectionStruct.payload), &(orient_correction), sizeof(orient_correction));
+        Configure_Output_Packet(Measurement::type, &(CorrectionStruct.param), CorrectionStruct.length());
+        Send_Data();
+    }
+
+    /**
+      * @name	SendLLACorrection
+      * @brief  Function sends packet including global coordinates (latitude,longitude and altitude) and sigma for them at selected timestamp
+      * @retval no return value.
+      */
+    void LMP_Device::SendLLACorrection(double lla[3], float lla_sig[3], Measurement::ETimestampType ts_type, uint16_t timestamp)
+    {
+        Measurement CorrectionStruct;
+        Measurement::LLA coord_correction;
+        for (uint8_t i = 0; i < 3; i++)
+        {
+            coord_correction.lla[i] = lla[i];
+            coord_correction.sig[i] = lla_sig[i];
+        }
+        CorrectionStruct.set_type(Measurement::LLA::type);
+        CorrectionStruct.set_timestamp_type(ts_type);
+        CorrectionStruct.timestamp = timestamp;
+        memcpy(&(CorrectionStruct.payload), &(coord_correction), sizeof(coord_correction));
+        Configure_Output_Packet(Measurement::type, &(CorrectionStruct.param), CorrectionStruct.length());
+        Send_Data();
+    }
+
+
+    /**
+      * @name	SendNavigationVelocityCorrection
+      * @brief  Function sends packet including velocities an navganion coordinate system and sigma for them at selected timestamp
+      * @retval no return value.
+      */
+    void LMP_Device::SendNavigationVelocityCorrection(float vel[3], float sig[3], Measurement::ETimestampType ts_type, uint16_t timestamp)
+    {
+        Measurement CorrectionStruct;
+        Measurement::Velocity vel_correction;
+        for (uint8_t i = 0; i < 3; i++)
+        {
+            vel_correction.vel[i] = vel[i];
+            vel_correction.sig[i] = sig[i];
+        }
+        CorrectionStruct.set_type(Measurement::Velocity::type);
+        CorrectionStruct.set_timestamp_type(ts_type);
+        CorrectionStruct.timestamp = timestamp;
+        memcpy(&(CorrectionStruct.payload), &(vel_correction), sizeof(vel_correction));
+        Configure_Output_Packet(Measurement::type, &(CorrectionStruct.param), CorrectionStruct.length());
+        Send_Data();
+    }
+
+
+    /**
+      * @name	SendBodyVelocityCorrection
+      * @brief  Function sends packet including velocities an body coordinate system and sigma for them at selected timestamp
+      * @retval no return value.
+      */
+    void LMP_Device::SendBodyVelocityCorrection(float vel[3], float sig[3], Measurement::ETimestampType ts_type, uint16_t timestamp)
+    {
+        Measurement CorrectionStruct;
+        Measurement::VelocityBody vel_correction;
+        for (uint8_t i = 0; i < 3; i++)
+        {
+            vel_correction.vel[i] = vel[i];
+            vel_correction.sig[i] = sig[i];
+        }
+        CorrectionStruct.set_type(Measurement::VelocityBody::type);
+        CorrectionStruct.set_timestamp_type(ts_type);
+        CorrectionStruct.timestamp = timestamp;
+        memcpy(&(CorrectionStruct.payload), &(vel_correction), sizeof(vel_correction));
+        Configure_Output_Packet(Measurement::type, &(CorrectionStruct.param), CorrectionStruct.length());
+        Send_Data();
+    }
+
+    /**
+      * @name	SendLLAandVelocityCorrection
+      * @brief  Function sends packet including global coordinates (latitude,longitude and altitude), velocities an navigation coordinate system and sigma for them at selected timestamp
+      * @retval no return value.
+      */
+    void LMP_Device::SendLLAandVelocityCorrection(double lla[3], float vel[3], float lla_sig[3], float vel_sig[3], Measurement::ETimestampType ts_type, uint16_t timestamp)
+    {
+        Measurement CorrectionStruct;
+        Measurement::LLAVelocity coord_vel_correction;
+        for (uint8_t i = 0; i < 3; i++)
+        {
+            coord_vel_correction.vel[i] = vel[i];
+            coord_vel_correction.sig_vel[i] = vel_sig[i];
+            coord_vel_correction.lla[i] = lla[i];
+            coord_vel_correction.sig_lla[i] = lla_sig[i];
+        }
+        CorrectionStruct.set_type(Measurement::LLAVelocity::type);
+        CorrectionStruct.set_timestamp_type(ts_type);
+        CorrectionStruct.timestamp = timestamp;
+        memcpy(&(CorrectionStruct.payload), &(coord_vel_correction), sizeof(coord_vel_correction));
+        Configure_Output_Packet(Measurement::type, &(CorrectionStruct.param), CorrectionStruct.length());
+        Send_Data();
+    }
 
     /**
       * @name	ResetDevice
@@ -1114,8 +1260,19 @@ namespace Gyrovert
             }
             break;
         }
+        case Measurement::type:
+        {
+            Measurement data;
+            memcpy(&(data), &(buf->data), buf->length);
+            if (ptrCorrectionResponsePacketCallback)
+            {
+                ptrCorrectionResponsePacketCallback(this, &data);
+            }
+            break;
+        }
         }
     }
+
 
  
 }
