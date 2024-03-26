@@ -144,6 +144,7 @@ namespace Gyrovert
         void RequestGyroOffsets();
         void SetGyroOffsets(int32_t offset_x, int32_t offset_y, int32_t offset_z);
 
+        void SetYaw(float yaw, float sig);
         void SendYawCorrection(float yaw, float sig, Measurement::ETimestampType ts_type,uint16_t timestamp);
         void SendAttitudeCorrection(float yaw, float pitch, float roll, float y_sig, float p_sig, float r_sig, Measurement::ETimestampType ts_type, uint16_t timestamp);
         void SendLLACorrection(double lla[3], float lla_sig[3], Measurement::ETimestampType ts_type, uint16_t timestamp);

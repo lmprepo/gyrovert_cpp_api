@@ -741,6 +741,20 @@ namespace Gyrovert
 
 
     /**
+  * @name	SetYaw
+  * @brief  Function sends packet including navigation yaw angle correction and sigma for it at the moment
+  * @retval no return value.
+  */
+    void LMP_Device::SetYaw(float yaw, float sig)
+    {
+        Measurement::Yaw yaw_correction;
+        yaw_correction.yaw = yaw;
+        yaw_correction.sig = sig;
+        Configure_Output_Packet(0x40, &(yaw_correction), sizeof(yaw_correction));
+        Send_Data();
+    }
+
+    /**
       * @name	SendYawCorrection
       * @brief  Function sends packet including navigation yaw angle correction and sigma for it at selected timestamp
       * @retval no return value.
