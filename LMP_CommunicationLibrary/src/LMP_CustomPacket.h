@@ -171,6 +171,14 @@ typedef struct __GKV_CustomData
 #define GKV_GPS_INT_X												        0X6B					/*	X axis in ECEF coordinates in integer value (to convert into cm multiply 2*pi/(2^32))	*/
 #define GKV_GPS_INT_Y												        0X6C					/*	Y axis in ECEF coordinates in integer value (to convert into cm multiply 2*pi/(2^32))	*/
 #define GKV_GPS_INT_Z												        0X6D					/*	Z axis in ECEF coordinates in integer value (to convert into cm multiply 2*pi/(2^32))	*/
+
+#define GKV_TIME_FROM_SEC                                                   0X6E                    /*  Time from second start in microseconds */
+#define GKV_GNSS_REL_HEADING                                                0X70                    /*  Relative pos heading from GNSS */
+#define GKV_GNSS_REL_LENGTH                                                 0X71                    /*  Relative pos length from GNSS */
+#define GKV_GNSS_REL_SIG_HEADING                                            0X72                    /*  Relative pos STD heading from GNSS*/
+#define GKV_GNSS_REL_SIG_LENGTH                                             0X73                    /*  Relative pos STD length from GNSS*/
+#define GKV_GNSS_REL_TIME                                                   0X74                    /*  Relative pos time from GNSS*/
+#define GKV_GNSS_REL_STATUS                                                 0X75                    /*  Relative pos status from GNSS*/
 /**
   * @}
   */
