@@ -37,6 +37,15 @@
 #ifndef __GKV_CUSTOM_PACKET_H__
 #define __GKV_CUSTOM_PACKET_H__
 
+/*  Device family can be set as:
+    DEVICE_FAMILY_IS_GKV_1 (actual for devices GKV-1 OEM,GKV-1,GKV-2,GKV-3)
+    DEVICE_FAMILY_IS_GKV_5 (actual for devices GKV-5,GKV-6,GKV-7)
+    DEVICE_FAMILY_IS_GKV_10 (actual for devices GKV-10,GKV-11,GKV-12)
+    DEVICE_FAMILY_IS_DEFAULT (actual for devices  GKV-10 family produced before 2021)
+    Differences between them lie in different intepretation od custom packet parameters numbers. For example GKV-10 family devices don't have barometer and have no parameters for it. 
+    */
+#define DEVICE_FAMILY_IS_GKV_1
+
 /** @defgroup CUSTOM_PACKET_CODES
   * @brief    packet codes for "type" field of custom data/parameters packet
   * @{
@@ -74,6 +83,7 @@ typedef struct __GKV_CustomData
 #define GKV_NWX 															0x05					/*	non-calibrated data from X axis of gyroscope 	*/
 #define GKV_NWY 															0x06					/*	non-calibrated data from Y axis of gyroscope 	*/
 #define GKV_NWZ 															0x07					/*	non-calibrated data from Z axis of gyroscope 	*/
+#if defined(DEVICE_FAMILY_IS_DEFAULT)
 #define GKV_NT0 															0x08					/*	non-calibrated data from 0 channel of 12-bit adc of MCU (temperature 0)	*/
 #define GKV_NT1 															0x09					/*	non-calibrated data from 1 channel of 12-bit adc of MCU (temperature 1)	*/
 #define GKV_NT2 															0x0A					/*	non-calibrated data from 2 channel of 12-bit adc of MCU (temperature 2)	*/
@@ -84,12 +94,36 @@ typedef struct __GKV_CustomData
 #define GKV_NT7 															0x0F					/*	non-calibrated data from 7 channel of 12-bit adc of MCU (temperature 7)	*/
 #define GKV_NT8 															0x10					/*	non-calibrated data from 8 channel of 12-bit adc of MCU (temperature 8)	*/
 #define GKV_NT9 															0x11					/*	non-calibrated data from 9 channel of 12-bit adc of MCU (temperature 9)	*/
+#else
+#define GKV_NMX 															0x08					/*	non-calibrated data from X axis of magnetometer */
+#define GKV_NMY 															0x09					/*	non-calibrated data from Y axis of magnetometer */
+#define GKV_NMZ 															0x0A					/*	non-calibrated data from Z axis of magnetometer */
+#endif
+#if defined(DEVICE_FAMILY_IS_GKV_10) || defined(DEVICE_FAMILY_IS_GKV_5)
+#define GKV_AZ2 															0x0B					/*	non-calibrated data from second Z axis of accelerometer  (not exist in GKV-1 family) */
+#define GKV_NTX 															0x0D					/*	non-calibrated data from X axis temperature sensor (not exist in GKV-1 family) */
+#define GKV_NTY 															0x0E					/*	non-calibrated data from Y axis temperature sensor (not exist in GKV-1 family) */
+#define GKV_NTZ 															0x0F					/*	non-calibrated data from Z axis temperature sensor (not exist in GKV-1 family) */
+#define GKV_NTAR 															0x10					/*	non-calibrated data from accelerometer 1 temperature sensor (not exist in GKV-1 family) */
+#define GKV_NTAL															0x11					/*	non-calibrated data from accelerometer 2 axis temperature sensor (not exist in GKV-1 family) */
+#endif
+#if defined(DEVICE_FAMILY_IS_GKV_10) 
+#define GKV_NVREF 															0x0C					/*	reference volage in ADC codes */
+#endif
+#if defined(DEVICE_FAMILY_IS_GKV_1) || defined(DEVICE_FAMILY_IS_GKV_5)
+#define GKV_NBARO 															0x0C					/*	barometer data in ADC codes */
+#endif
+#if defined(DEVICE_FAMILY_IS_GKV_1)
+#define GKV_NTA 															0x0D					/*	non-calibrated data from accelerometer temperature sensor */
+#define GKV_NTW 															0x0E					/*	non-calibrated data from gyro temperature sensor */
+#endif
 #define GKV_AX 																0x12					/*	calibrated data from X axis of accelerometer 	*/
 #define GKV_AY 																0x13					/*	calibrated data from Y axis of accelerometer 	*/
 #define GKV_AZ 																0x14					/*	calibrated data from Z axis of accelerometer 	*/
 #define GKV_WX 																0x15					/*	calibrated data from X axis of gyroscope 	*/
 #define GKV_WY 																0x16					/*	calibrated data from X axis of gyroscope	*/
 #define GKV_WZ 																0x17					/*	calibrated data from X axis of gyroscope	*/
+#if defined(DEVICE_FAMILY_IS_DEFAULT)
 #define GKV_T0 																0x18					/*	calibrated data from 0 channel of 12-bit adc of MCU (temperature 0)	*/
 #define GKV_T1 																0x19					/*	calibrated data from 1 channel of 12-bit adc of MCU (temperature 1)	*/
 #define GKV_T2																0x1A					/*	calibrated data from 2 channel of 12-bit adc of MCU (temperature 2)	*/
@@ -100,6 +134,29 @@ typedef struct __GKV_CustomData
 #define GKV_T7 																0x1F					/*	calibrated data from 7 channel of 12-bit adc of MCU (temperature 7)	*/
 #define GKV_T8 																0x20					/*	calibrated data from 8 channel of 12-bit adc of MCU (temperature 8)	*/
 #define GKV_T9 																0x21					/*	calibrated data from 9 channel of 12-bit adc of MCU (temperature 9)	*/
+#else
+#define GKV_MX 		    													0x18					/*	calibrated data from X axis of magnetometer */
+#define GKV_MY 					    										0x19					/*	calibrated data from Y axis of magnetometer */
+#define GKV_MZ 					    										0x1A					/*	calibrated data from Z axis of magnetometer */
+#endif  
+#if defined(DEVICE_FAMILY_IS_GKV_10) || defined(DEVICE_FAMILY_IS_GKV_5)
+#define GKV_AZ2 															0x1B					/*	calibrated data from second Z axis of accelerometer  (not exist in GKV-1 family) */
+#define GKV_TX 														    	0x1D					/*	calibrated data from X axis temperature sensor (not exist in GKV-1 family) */
+#define GKV_TY 														    	0x1E					/*	calibrated data from Y axis temperature sensor (not exist in GKV-1 family) */
+#define GKV_TZ 														    	0x1F					/*	calibrated data from Z axis temperature sensor (not exist in GKV-1 family) */
+#define GKV_TAR 															0x20					/*	calibrated data from accelerometer 1 temperature sensor (not exist in GKV-1 family) */
+#define GKV_TAL													    		0x21					/*	calibrated data from accelerometer 2 axis temperature sensor (not exist in GKV-1 family) */
+#endif
+#if defined(DEVICE_FAMILY_IS_GKV_10) 
+#define GKV_VREF 															0x1C					/*	reference volage in volts */
+#endif
+#if defined(DEVICE_FAMILY_IS_GKV_1) || defined(DEVICE_FAMILY_IS_GKV_5)
+#define GKV_BARO 															0x1C					/*	barometer data in Pascals */
+#endif
+#if defined(DEVICE_FAMILY_IS_GKV_1)
+#define GKV_TA 								`   							0x1D					/*	calibrated data from accelerometer temperature sensor */
+#define GKV_TW 								    							0x1E					/*	calibrated data from gyro temperature sensor */
+#endif
 #define GKV_ALPHA 														    0x22					/*	alpha angle of inclinometer	*/
 #define GKV_BETA 															0x23					/*	beta angle of inclinometer	*/
 #define GKV_PITCH 														    0x24					/*	pitch angle of euler orientation system	*/
@@ -115,6 +172,7 @@ typedef struct __GKV_CustomData
 #define GKV_VX 																0x2E					/*	linear velocity x	*/
 #define GKV_VY 																0x2F					/*	linear velocity y	*/
 #define GKV_VZ 																0x30					/*	linear velocity z	*/
+#if defined(DEVICE_FAMILY_IS_DEFAULT)
 #define GKV_IWX 															0x31					/*	integrated angle from rate of x axis of gyro	*/
 #define GKV_IWY 															0x32					/*	integrated angle from rate of y axis of gyro	*/
 #define GKV_IWZ 															0x33					/*	integrated angle from rate of z axis of gyro	*/
@@ -129,6 +187,28 @@ typedef struct __GKV_CustomData
 #define GKV_LAY 															0x41					/*	linear acceleration y	*/
 #define GKV_LAZ 															0x42					/*	linear acceleration z	*/
 #define GKV_AZIMUTH 												    	0x43					/*	azimuth angle (when using GNSS)	*/
+#else
+#define GKV_LAX 															0x31					/*	linear acceleration x	*/
+#define GKV_LAY 															0x32					/*	linear acceleration y	*/
+#define GKV_LAZ 															0x33					/*	linear acceleration z	*/
+#define GKV_IWX 															0x34					/*	integrated angle from rate of x axis of gyro (int32)	*/
+#define GKV_IWY 															0x35					/*	integrated angle from rate of y axis of gyro (int32)	*/
+#define GKV_IWZ 															0x36					/*	integrated angle from rate of z axis of gyro (int32)	*/
+#define GKV_IAX 															0x37					/*	integrated angle from acceleration of x axis of accelerometer (int32)	*/
+#define GKV_IAY 															0x38					/*	integrated angle from acceleration of y axis of accelerometer (int32)	*/
+#define GKV_IAZ 															0x39					/*	integrated angle from acceleration of z axis of accelerometer (int32)	*/
+
+#define GKV_WBX 															0x3A					/*	estimation of gyroscope X axis bias  	*/
+#define GKV_WBY 															0x3B					/*	estimation of gyroscope Y axis bias	*/
+#define GKV_WBZ 															0x3C					/*	estimation of gyroscope Z axis bias	*/
+#define GKV_ABX 													    	0x3D					/*	estimation of accelerometer X axis bias 	*/
+#define GKV_ABY 															0x3E					/*	estimation of accelerometer Y axis bias 	*/
+#define GKV_ABZ 															0x3F					/*	estimation of accelerometer Z axis bias 	*/
+#define GKV_MBX 													    	0x40					/*	estimation of magnetometer X axis bias 	*/
+#define GKV_MBY 															0x41					/*	estimation of magnetometer Y axis bias 	*/
+#define GKV_MBZ 															0x42					/*	estimation of magnetometer Z axis bias 	*/
+#define GKV_SYNC_CNT 														0x43					/*	syncronization pulses counter (pulses on device SYNC_IN pin) 	*/
+#endif
 #define GKV_UTC_TIME 												    	0x44					/*	Coordinated Universal Time (when using GNSS)	*/
 #define GKV_LAT 															0x45					/*	latitude (when using GNSS)	*/
 #define GKV_LON 															0x46					/*	longitude (when using GNSS)	*/
@@ -141,9 +221,11 @@ typedef struct __GKV_CustomData
 #define GKV_GNSS_YAW 												    	0x4D					/*	yaw angle calculated using GNSS	*/
 #define GKV_GNSS_ALT_VEL 										        	0x4E					/*	verical velocity calculated using GNSS	*/
 #define GKV_GNSS_SAT_NUM 										            0x4F					/*	number of sattelites using to calculate GNSS parameters	*/
+#if defined(DEVICE_FAMILY_IS_DEFAULT)
 #define GKV_MX	 															0x50					/*	magnetometer data x	*/
 #define GKV_MY 																0x51					/*	magnetometer data y	*/
 #define GKV_MZ 																0x52					/*	magnetometer data z	*/
+#endif
 #define GKV_GNSS_LAT_VEL 											        0x53					/*	velocity on latitude (using GNSS)	*/
 #define GKV_GNSS_LON_VEL 											        0x54					/*	velocity on longitude (using GNSS)	*/
 #define GKV_GNSS_SIG_LAT 											        0x55					/*	STD of latitude data	*/
@@ -158,7 +240,11 @@ typedef struct __GKV_CustomData
 #define GKV_GNSS_INT_LAT											        0X5E					/*	latitude from GNSS in codes (to convert into radians multiply 2*pi/(2^32))	*/
 #define GKV_GNSS_INT_LON											        0X5F					/*	longitude from GNSS in codes (to convert into radians multiply 2*pi/(2^32))	*/
 #define GKV_ALG_STATE_STATUS										        0X60					/*	altitude from GNSS in codes (to convert into radians multiply 2*pi/(2^32))	*/
+#if defined(DEVICE_FAMILY_IS_DEFAULT)
 #define GKV_BAROMETER_ADC											        0X61					/*	Barometer data in codes	*/
+#else
+#define GKV_ALG_TIME    											        0X61					/*	algorithm time in ms	*/
+#endif
 #define GKV_ALG_VAR_X													    0X62					/*	variance of position error of X axis in m2	*/
 #define GKV_ALG_VAR_Y													    0X63					/*	variance of position error of Y axis in m2	*/
 #define GKV_ALG_VAR_Z													    0X64					/*	variance of position error of Z axis in m2	*/
@@ -168,10 +254,13 @@ typedef struct __GKV_CustomData
 #define GKV_ALG_VAR_PSI												        0X68					/*	variance of orientation error of yaw axis in rad^2	*/
 #define GKV_ALG_VAR_THETA											        0X69					/*	variance of orientation error of pitch axis in rad^2	*/
 #define GKV_ALG_VAR_PHI												        0X6A					/*	variance of orientation error of roll axis in rad^2	*/
+#if defined(DEVICE_FAMILY_IS_DEFAULT)
 #define GKV_GPS_INT_X												        0X6B					/*	X axis in ECEF coordinates in integer value (to convert into cm multiply 2*pi/(2^32))	*/
 #define GKV_GPS_INT_Y												        0X6C					/*	Y axis in ECEF coordinates in integer value (to convert into cm multiply 2*pi/(2^32))	*/
 #define GKV_GPS_INT_Z												        0X6D					/*	Z axis in ECEF coordinates in integer value (to convert into cm multiply 2*pi/(2^32))	*/
-
+#else
+#define GKV_MAG_YAW 												        0X6B					/*	yaw_calculated from magnetometer (experimental)	*/
+#endif
 #define GKV_TIME_FROM_SEC                                                   0X6E                    /*  Time from second start in microseconds */
 #define GKV_GNSS_REL_HEADING                                                0X70                    /*  Relative pos heading from GNSS */
 #define GKV_GNSS_REL_LENGTH                                                 0X71                    /*  Relative pos length from GNSS */
