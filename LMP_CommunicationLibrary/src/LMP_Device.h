@@ -138,6 +138,8 @@ namespace Gyrovert
         void RequestSettings();
         void RequestData();
         void RequestCustomPacketParams();
+        void RequestAlgorithmSpecialParameter(uint32_t index);
+        void SendAlgorithmSpecialParameter(uint32_t index, float value, bool saveToFlash);
         void ResetDevice();
 
         void CalculateGyroOffsets(uint32_t samples);
@@ -175,6 +177,7 @@ namespace Gyrovert
         void SetConfirmPacketReceivedCallback(std::function<void(LMP_Device*)> ptrReceivedPacketProcessingFun);
         void SetGyroOffsetsWrittenCallback(std::function<void(LMP_Device*)> ptrReceivedPacketProcessingFun);
         void SetGyroOffsetsReceivedCallback(std::function<void(LMP_Device*, GKV_GyroOffset*)>ptrReceivedPacketProcessingFun);
+        void SetAlgorithmSpecialParameterReceivedCallback(std::function<void(LMP_Device*, GKV_AlgParam*)>ptrReceivedPacketProcessingFun);
 
         void clear() { CTR = 0; }
 
@@ -220,7 +223,7 @@ namespace Gyrovert
         std::function<void(LMP_Device*, Measurement*)>ptrCorrectionResponsePacketCallback = nullptr;
 
         std::function<void(LMP_Device*, GKV_GyroOffset*)>ptrGyroOffsetsReceivedCallback = nullptr;
-
+        std::function<void(LMP_Device*, GKV_AlgParam*)>ptrAlgorithmSpecialParameterReceivedCallback = nullptr;
         
 
         bool CheckConnectionRequestedFlag = false;

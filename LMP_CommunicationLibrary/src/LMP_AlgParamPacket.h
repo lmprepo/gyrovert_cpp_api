@@ -98,8 +98,8 @@
   */
 
 
-
-/** 
+#pragma pack(push, 1)
+  /**
   * @brief  Packet 0x23 is used to request parameters of algorithm (send only)
   */
 typedef struct __GKV_GetAlgParam
@@ -118,5 +118,6 @@ typedef struct __GKV_AlgParam
 	char name[32]; 					                            /* ASCII algorithm parameter name (receive only) */	
 	uint8_t save_to_flash;						                /* write parameter value to ROM (send only)	*/
 }GKV_AlgParam;
+#pragma pack(pop)
 
 #endif

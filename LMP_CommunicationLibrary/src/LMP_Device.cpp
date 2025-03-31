@@ -247,6 +247,17 @@ namespace Gyrovert
         ptrGyroOffsetsReceivedCallback = ptrReceivedPacketProcessingFun;
     }
 
+    /**
+      * @name	SetAlgorithmSpecialParameterReceivedCallback
+      * @brief  Function sets pointer on user function for processing received and parsed packet with special parameter of current algorithm (type 0x24) from LMP Device
+      * @param  ptrReceivedPacketProcessingFun - pointer on void-type user callback function that gets pointer on device object
+      * @retval no return value.
+      */
+    void LMP_Device::SetAlgorithmSpecialParameterReceivedCallback(std::function<void(LMP_Device*, GKV_AlgParam*)>ptrReceivedPacketProcessingFun)
+    {
+        ptrAlgorithmSpecialParameterReceivedCallback = ptrReceivedPacketProcessingFun;
+    }
+
 
     /**
       * @name	SetIfProtoCommandResponseReceivedCallback
@@ -700,6 +711,37 @@ namespace Gyrovert
     {
         SendEmptyPacket(GKV_CUSTOM_PACKET_PARAM_REQUEST);
     }
+
+
+    /**
+  * @name	RequestAlgorithmSpecialParameter
+  * @brief  Function Configures and sends Packet with Request for selected by index Special Settings Parameter of Current Algorithm (type=0x23). 
+            Response includes index,value, string description of selected parameter and count of parameters in current algorithm.
+  * @retval no return value.
+  */
+    void LMP_Device::RequestAlgorithmSpecialParameter(uint32_t index)
+    {
+        GKV_GetAlgParam algParameterRequest;
+        algParameterRequest.i = index;
+        Configure_Output_Packet(GKV_ALG_PARAM_REQUEST, &algParameterRequest, sizeof(GKV_GetAlgParam));
+        Send_Data();
+    }
+
+    /**
+    * @name	SendAlgorithmSpecialParameter
+    * @brief  Function Configures and sends Packet with value of selected by index Special Settings Parameter of Current Algorithm (type=0x24)
+    * @retval no return value.
+    */
+    void LMP_Device::SendAlgorithmSpecialParameter(uint32_t index,float value,bool saveToFlash)
+    {
+        GKV_AlgParam algParameter;
+        algParameter.i = index;
+        algParameter.val = value;
+        algParameter.save_to_flash = saveToFlash;
+        Configure_Output_Packet(GKV_ALG_PARAM_PACKET, &algParameter, sizeof(algParameter));
+        Send_Data();
+    }
+
 
     /**
       * @name	CalculateGyroOffsets
@@ -1261,6 +1303,16 @@ namespace Gyrovert
             if (ptrGyroOffsetsReceivedCallback)
             {
                 ptrGyroOffsetsReceivedCallback(this, &data);
+            }
+            break;
+        }
+        case GKV_ALG_PARAM_PACKET:
+        {
+            GKV_AlgParam data;
+            memcpy(&(data), &(buf->data), buf->length);
+            if (ptrAlgorithmSpecialParameterReceivedCallback)
+            {
+                ptrAlgorithmSpecialParameterReceivedCallback(this, &data);
             }
             break;
         }
