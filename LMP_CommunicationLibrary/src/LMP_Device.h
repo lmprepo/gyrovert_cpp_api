@@ -139,7 +139,6 @@ namespace Gyrovert
         void RequestData();
         void RequestCustomPacketParams();
         void RequestAlgorithmSpecialParameter(uint32_t index);
-        void SendAlgorithmSpecialParameter(uint32_t index, float value, bool saveToFlash);
         void ResetDevice();
 
         void CalculateGyroOffsets(uint32_t samples);
@@ -153,6 +152,7 @@ namespace Gyrovert
         void SendNavigationVelocityCorrection(float vel[3], float sig[3], Measurement::ETimestampType ts_type, uint16_t timestamp);
         void SendBodyVelocityCorrection(float vel[3], float sig[3], Measurement::ETimestampType ts_type, uint16_t timestamp);
         void SendLLAandVelocityCorrection(double lla[3], float vel[3], float lla_sig[3], float vel_sig[3], Measurement::ETimestampType ts_type, uint16_t timestamp);
+        void SendAlgorithmSpecialParameter(uint32_t index, float value, bool saveToFlash);
 
 
         bool IsCustomPacketParamReceived() { return CustomPacketParamReceivedFlag; }
